@@ -26,6 +26,9 @@
     --color-accent: var(--color-neutral-800);
     --color-accent-content: var(--color-neutral-800);
     --color-accent-foreground: var(--color-white);
+
+    --font-dancing: 'Dancing Script', ui-serif, serif;
+    --font-lora: 'Lora', ui-serif, serif;
 }
 
 @layer theme {
