@@ -93,6 +93,7 @@
     "WithFemales": "{0} 0 Frauen|{1} 1 Frau|[2,*] :count Frauen",
     "WithMales": "{0} 0 Männer|{1} 1 Mann|[2,*] :count Männern",
     "WithChildren": "{0} 0 Kinder|{1} 1 Kind|[2,*] :count Kindern",
-    "DeclinedWith": "Abgesagt"
-
+    "DeclinedWith": "Abgesagt",
+    "Plus One Allowed": "Anhang erlaubt",
+    "That's Us": "Das sind wir"
 } 

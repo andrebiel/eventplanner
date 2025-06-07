@@ -18,7 +18,8 @@ class Occasion extends Model
 
     public function guestGroups()
     {
-        return $this->belongsToMany(GuestGroup::class)->withPivot('importance', 'invite_token');
+        return $this->belongsToMany(GuestGroup::class)
+            ->withPivot('importance', 'invite_token', 'plus_one_allowed', 'thats_us');
     }
 
     public function attendees()

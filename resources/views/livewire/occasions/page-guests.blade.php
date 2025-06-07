@@ -9,29 +9,10 @@ use App\Models\Attendee;
 new class extends Component {
     public Occasion $occasion;
     public Collection $guestGroups;
-    public Collection $groupAttendees;
 
     public function mount()
     {
         $this->fetchGuestGroups();
-        $this->groupAttendees = $this->occasion->attendees()
-            ->with('guest', 'guestGroup')
-            ->get()
-            ->reduce(function (Collection $carry, Attendee $attendee) {
-                if(!$carry->has($attendee->guest_group_id)) {
-                    $carry->put($attendee->guest_group_id, [
-                        'male' => 0,
-                        'female' => 0,
-                        'child' => 0,
-                    ]);
-                }
-
-                $groupStats = $carry->get($attendee->guest_group_id);
-                $groupStats[$attendee->guest->type]++;
-                $carry->put($attendee->guest_group_id, $groupStats);
-
-                return $carry;
-            }, collect());
     }
 
     #[On('guest-group-updated')]
@@ -51,6 +32,7 @@ new class extends Component {
     {
         $this->guestGroups = $this->occasion->guestGroups()
             ->with('guests')
+            ->orderBy('thats_us', 'desc')
             ->orderBy('name')
             ->get();
     }
@@ -68,36 +50,30 @@ new class extends Component {
     <flux:table>
         <flux:table.columns>
             <flux:table.column>{{ __('Name') }}</flux:table.column>
-            <flux:table.column>{{ __('Status') }}</flux:table.column>
+            <flux:table.column>{{ __('Plus One Allowed') }}</flux:table.column>
+            <flux:table.column>{{ __('Importance') }}</flux:table.column>
             <flux:table.column></flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
             @foreach ($guestGroups as $guestGroup)
-                @php 
-                    $attendees = $groupAttendees->get($guestGroup->id); 
-                    $joinStr = $attendees ? collect([
-                        $attendees['female'] > 0 ? trans_choice('WithFemales', $attendees['female']) : null,
-                        $attendees['male'] > 0 ? trans_choice('WithMales', $attendees['male']) : null,
-                        $attendees['child'] > 0 ? trans_choice('WithChildren', $attendees['child']) : null,
-                    ])->filter(fn($item) => !empty($item))->implode(', ') : '';
-                @endphp
-
                 <flux:table.row wire:key="table-row-{{ $guestGroup->id }}">
                     <flux:table.cell>
                         <flux:modal.trigger name="edit-guest-group-{{ $guestGroup->id }}">
                             <button class="hover:cursor-pointer outline-none">
-                                <flux:text>{{ $guestGroup->name }}</flux:text>
+                                <flux:text class="{{ $guestGroup->pivot->thats_us ? 'font-bold' : '' }}">{{ $guestGroup->name }}</flux:text>
                             </button>
                         </flux:modal.trigger>
                     </flux:table.cell>
 
                     <flux:table.cell>
-                        @if($attendees)
-                            <flux:badge color="lime">
-                                {{ $joinStr }}
-                            </flux:badge>
-                        @endif
+                        <flux:text>
+                            {{ $guestGroup->pivot->plus_one_allowed ? __('Yes') : __('No') }}
+                        </flux:text>
+                    </flux:table.cell>
+
+                    <flux:table.cell>
+                        <x-star-rating :rating="$guestGroup->pivot->importance" />
                     </flux:table.cell>
 
                     <flux:table.cell class="text-right">

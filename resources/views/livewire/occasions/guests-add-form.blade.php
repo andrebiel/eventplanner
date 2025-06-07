@@ -19,6 +19,8 @@ new class extends Component {
     public string $groupName = '';
     public array $guests = [];
     public float $importance = 0.5; // GuestOccasionImportance::HIGH->getValue();
+    public bool $plusOneAllowed = false;
+    public bool $thatsUs = false;
 
     protected function rules()
     {
@@ -28,6 +30,8 @@ new class extends Component {
             'guests' => ['required', 'array'],
             'guests.*.name' => ['required', 'string'],
             'guests.*.type' => ['required', 'string', 'in:' . implode(',', GuestType::values())],
+            'plusOneAllowed' => ['required', 'boolean'],
+            'thatsUs' => ['required', 'boolean'],
         ];
     }
 
@@ -36,6 +40,8 @@ new class extends Component {
         $this->groupName = $this->guestGroup?->name ?? '';
         $this->email = $this->guestGroup?->email ?? '';
         $this->importance = $this->guestGroup?->pivot->importance ?? GuestOccasionImportance::MEDIUM->getValue();
+        $this->plusOneAllowed = $this->guestGroup?->pivot->plus_one_allowed ?? false;
+        $this->thatsUs = $this->guestGroup?->pivot->thats_us ?? false;
 
         $this->guests = $this->guestGroup?->guests->map(fn ($guest) => [    
             'name' => $guest->name,
@@ -52,10 +58,14 @@ new class extends Component {
                 'name' => count($this->guests) === 1 
                     ? $this->groupName . '-' . $this->guests[0]['name'] 
                     : $this->groupName,
-                'email' => $this->email ,
+                'email' => $this->email,
             ]);
 
-            $this->occasion->guestGroups()->attach($group, ['importance' => $this->importance]);
+            $this->occasion->guestGroups()->attach($group, [
+                'importance' => $this->importance,
+                'plus_one_allowed' => $this->plusOneAllowed,
+                'thats_us' => $this->thatsUs
+            ]);
         } else {
             $this->guestGroup->update([
                 'name' => $this->groupName,
@@ -65,6 +75,8 @@ new class extends Component {
             $this->occasion->guestGroups()->updateExistingPivot($this->guestGroup, [
                 'importance' => $this->importance,
                 'invite_token' => Str::random(32),
+                'plus_one_allowed' => $this->plusOneAllowed,
+                'thats_us' => $this->thatsUs,
             ]);
 
             $group = $this->guestGroup;
@@ -128,6 +140,22 @@ new class extends Component {
         <div class="my-4">
             <flux:input type="email" label="{{ __('EmailLabel') }}" placeholder="{{ __('EmailPlaceholder') }}" 
                 description="{{ __('EmailDescription') }}" wire:model="email" />
+        </div>
+
+        <div class="my-4">
+            <flux:field variant="inline">
+                <flux:label>{{ __('Plus One Allowed') }}</flux:label>
+                <flux:switch wire:model.live="plusOneAllowed" />
+                <flux:error name="plusOneAllowed" />
+            </flux:field>
+        </div>
+
+        <div class="my-4">
+            <flux:field variant="inline">
+                <flux:label>{{ __('That\'s Us') }}</flux:label>
+                <flux:switch wire:model.live="thatsUs" />
+                <flux:error name="thatsUs" />
+            </flux:field>
         </div>
 
         <div class="my-4">
