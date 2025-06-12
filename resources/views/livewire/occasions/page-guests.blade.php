@@ -5,6 +5,7 @@ use App\Models\Occasion;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use App\Models\Attendee;
+use Livewire\WithClipboard;
 
 new class extends Component {
     public Occasion $occasion;
@@ -77,7 +78,12 @@ new class extends Component {
                     </flux:table.cell>
 
                     <flux:table.cell class="text-right">
-                        <flux:button icon="trash" variant="filled" size="sm" class="hover:cursor-pointer" wire:click="deleteGuestGroup({{ $guestGroup->id }})">
+                        <flux:button icon="document-duplicate" size="sm" class="hover:cursor-pointer" 
+                            wire:click="$js.copyLink('{{ route('save-the-date.detail', ['occasion' => $occasion, 'token' => $guestGroup->pivot->invite_token]) }}')">
+                            {{ __('Copy Link') }}
+                        </flux:button>
+
+                        <flux:button icon="trash" variant="danger" size="sm" class="hover:cursor-pointer" wire:click="deleteGuestGroup({{ $guestGroup->id }})">
                             {{ __('Delete') }}
                         </flux:button>
                     </flux:table.cell>
@@ -98,3 +104,11 @@ new class extends Component {
         <livewire:occasions.guests-add-form :occasion="$occasion" wire:key="create-guests-form" />
     </flux:modal>
 </div>
+
+@script
+<script>
+    $js('copyLink', (link) => {
+        navigator.clipboard.writeText(link);
+    })
+</script>
+@endscript

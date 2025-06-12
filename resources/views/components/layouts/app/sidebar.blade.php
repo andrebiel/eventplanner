@@ -26,6 +26,10 @@
                 <flux:navlist.item icon="calendar" :href="route('occasions.page-save-the-date', auth()->user()->currentOccasion)"
                     :current="request()->routeIs('occasions.page-save-the-date')" wire:navigate>{{ __('Save the Date') }}
                 </flux:navlist.item>
+
+                <flux:navlist.item icon="document-check" :href="route('occasions.page-attendees', auth()->user()->currentOccasion)"
+                    :current="request()->routeIs('occasions.page-attendees')" wire:navigate>{{ __('Attendees') }}
+                </flux:navlist.item>
             </flux:navlist>
         @endif
 

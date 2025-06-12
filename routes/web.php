@@ -21,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('occasions/{occasion}/dashboard', 'occasions.page-dashboard')->name('occasions.page-dashboard');
     Volt::route('occasions/{occasion}/guests', 'occasions.page-guests')->name('occasions.page-guests');
     Volt::route('occasions/{occasion}/save-the-date', 'occasions.page-save-the-date')->name('occasions.page-save-the-date');
+    Volt::route('occasions/{occasion}/attendees', 'occasions.page-attendees')->name('occasions.page-attendees');
 });
 
 Volt::route('save-the-date/{occasion}/{token}', 'save-the-date.page-info')->name('save-the-date.detail');

@@ -95,5 +95,10 @@
     "WithChildren": "{0} 0 Kinder|{1} 1 Kind|[2,*] :count Kindern",
     "DeclinedWith": "Abgesagt",
     "Plus One Allowed": "Anhang erlaubt",
-    "That's Us": "Das sind wir"
+    "That's Us": "Das sind wir",
+    "Attendees": "Teilnehmer",
+    "All guests that confirmed their attendance.": "Alle Gäste, die ihre Anwesenheit bestätigt haben.",
+    "Group": "Gruppe",
+    "Accepted at": "Bestätigt am",
+    "Copy Link": "Link kopieren"
 } 
